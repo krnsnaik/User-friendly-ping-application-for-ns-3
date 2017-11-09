@@ -10,12 +10,11 @@
 #include "ns3/internet-apps-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
-
 using namespace ns3;
-static void PingRtt (std::string context, Time rtt)
+/*static void PingRtt (std::string context, Time rtt)
 {
   std::cout << context << " " << rtt << std::endl;
-}
+}*/
 int
 main (int argc, char *argv[])
 {
@@ -37,16 +36,19 @@ main (int argc, char *argv[])
  
 
 	ApplicationContainer apps;
+	std::string S="-v -i 10 -c 10";
 
 	V4PingHelper ping = V4PingHelper (interfaces.GetAddress (1));
-	apps = ping.Install (c);
+
+	apps = ping.Install (c,S);
+
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (3.0));
 
 	Packet::EnablePrinting ();
 
-Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::V4Ping/Rtt",
-                   MakeCallback (&PingRtt));
+//Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::V4Ping/Rtt",
+     //              MakeCallback (&PingRtt));
 
 
 
