@@ -65,7 +65,11 @@ V4Ping::GetTypeId (void)
     .AddTraceSource ("Rtt",
                      "The rtt calculated by the ping.",
                      MakeTraceSourceAccessor (&V4Ping::m_traceRtt),
-                     "ns3::Time::TracedCallback");
+                     "ns3::Time::TracedCallback")
+    .AddAttribute ("Ttl",  "Set the IP Time to Live.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&V4Ping::m_ttl),
+                   MakeUintegerChecker<uint32_t> (0));
   ;
   return tid;
 }
@@ -76,8 +80,10 @@ V4Ping::V4Ping ()
     m_socket (0),
     m_seq (0),
     m_count (UINT_MAX),
+        m_ttl(0),
     m_verbose (false),
     m_recv (0)
+
 {
   NS_LOG_FUNCTION (this);
 }
@@ -129,11 +135,16 @@ V4Ping::Receive (Ptr<Socket> socket)
       InetSocketAddress realFrom = InetSocketAddress::ConvertFrom (from);
       NS_ASSERT (realFrom.GetPort () == 1); // protocol should be icmp.
       Ipv4Header ipv4;
+        
       p->RemoveHeader (ipv4);
       uint32_t recvSize = p->GetSize ();
       NS_ASSERT (ipv4.GetProtocol () == 1); // protocol should be icmp.
       Icmpv4Header icmp;
       p->RemoveHeader (icmp);
+ if(m_ttl>0)     
+                                    {
+                                  ipv4.SetTtl (m_ttl);
+                                    }
       if (icmp.GetType () == Icmpv4Header::ECHO_REPLY)
         {
           Icmpv4Echo echo;
@@ -166,6 +177,7 @@ V4Ping::Receive (Ptr<Socket> socket)
 
                       if (m_verbose)
                         {
+                           
                           std::cout << recvSize << " bytes from " << realFrom.GetIpv4 () << ":"
                                     << " icmp_seq=" << echo.GetSequenceNumber ()
                                     << " ttl=" << (unsigned)ipv4.GetTtl ()

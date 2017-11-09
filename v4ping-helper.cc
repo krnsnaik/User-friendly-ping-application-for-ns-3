@@ -19,70 +19,103 @@
  */
 
 #include "v4ping-helper.h"
-#include "ns3/boolean.h"
-#include "ns3/uinteger.h"
 #include "ns3/v4ping.h"
 #include "ns3/names.h"
-#include <string>
+#include "ns3/abort.h"
+#include "ns3/core-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/network-module.h"
+#include "ns3/fd-net-device-module.h"
+#include "ns3/internet-apps-module.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
+#include<iostream>
 
 using namespace std;
 namespace ns3 {
 
-    V4PingHelper::V4PingHelper (Ipv4Address remote)
+V4PingHelper::V4PingHelper (Ipv4Address remote)
+{
+  m_factory.SetTypeId ("ns3::V4Ping");
+  m_factory.Set ("Remote", Ipv4AddressValue (remote));
+}
+
+void 
+V4PingHelper::SetAttribute (string name, const AttributeValue &value)
+{
+  m_factory.Set (name, value);
+}
+
+ApplicationContainer
+V4PingHelper::Install (Ptr<Node> node) const
+{
+     
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+V4PingHelper::Install (string nodeName) const
+{
+   
+
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+V4PingHelper::Install (NodeContainer c) const
+{
+  ApplicationContainer apps;
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-        m_factory.SetTypeId ("ns3::V4Ping");
-        m_factory.Set ("Remote", Ipv4AddressValue (remote));
+      apps.Add (InstallPriv (*i));
     }
 
-    void  V4PingHelper::SetAttribute (std::string name, const AttributeValue &value)
+  return apps;
+}
+      
+ApplicationContainer
+V4PingHelper::Install (NodeContainer c,string s) const
+{
+
+
+        string params[100];
+int ctr=0;
+        cout<<s;
+
+   
+
+    for (unsigned int i = 0; i<s.length(); i++){
+    if (s[i] == ' ')
+        ctr++;
+    else
+        params[ctr] += s[i];
+}
+
+        for(int i=0;i<ctr;++i)
+{
+        cout<<params[i]<<endl;
+}
+  ApplicationContainer apps;
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-        m_factory.Set (name, value);
+      apps.Add (InstallPriv (*i));
     }
 
-    ApplicationContainer V4PingHelper::Install (Ptr<Node> node) const
-    {
-        return ApplicationContainer (InstallPriv (node));
-    }
-
-    ApplicationContainer V4PingHelper::Install (std::string nodeName) const
-    {
-        Ptr<Node> node = Names::Find<Node> (nodeName);
-        return ApplicationContainer (InstallPriv (node));
-    }
-
-    ApplicationContainer V4PingHelper::Install (NodeContainer c) const
-    {
-        ApplicationContainer apps;
-        for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-        {
-            apps.Add (InstallPriv (*i));
-        }
-
-        return apps;
-    }
-
-    ApplicationContainer V4PingHelper::Install (NodeContainer c, string s) const
-    {
-
-        ApplicationContainer apps;
-        for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-        {
-            apps.Add (InstallPriv (*i));
-        }
-
-        return apps;
-    }
-
-    Ptr<Application> V4PingHelper::InstallPriv (Ptr<Node> node) const
-    {
-        Ptr<V4Ping> app = m_factory.Create<V4Ping> ();
+  return apps;
+}
+Ptr<Application>
+V4PingHelper::InstallPriv (Ptr<Node> node) const
+{
+      Ptr<V4Ping> app = m_factory.Create<V4Ping> ();
         app->SetAttribute ("Count", UintegerValue (5));
+         app->SetAttribute ("Ttl", UintegerValue (50));
         app->SetAttribute ("Verbose", BooleanValue (true) );     
         Time interPacketInterval = Seconds (1.);
         app->SetAttribute ("Interval", TimeValue (interPacketInterval) );
         
         node->AddApplication (app);
-        return app;
-    }
-
+return app;
 }
+
+} // namespace ns3
