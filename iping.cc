@@ -12,12 +12,18 @@
 using namespace ns3;
 using namespace std;
 
-/*static void PingRtt (string context, Time rtt)
-{
-  cout << context << " " << rtt << endl;
-}*/
+NS_LOG_COMPONENT_DEFINE ("iPing");
+
 int main (int argc, char *argv[])
 {
+	NS_LOG_INFO ("iPing - User friendly ping");
+
+	string userArg ("-v");  //By defaut, output lines will be produced.
+
+	CommandLine cmd;
+	cmd.AddValue("userArg", "Pass arguments in this format:[-qv] [-c count] [-i interval] [-t ttl] [-w deadline]", userArg);
+  	cmd.Parse (argc, argv);
+
 	NodeContainer c;
 	c.Create (2);
 
@@ -35,16 +41,15 @@ int main (int argc, char *argv[])
 	Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
 
-	ApplicationContainer apps;
-	string S="-v -i 10 -c 10";
+	ApplicationContainer app;
 
-	V4PingHelper ping = V4PingHelper (interfaces.GetAddress (1));
+	V4PingHelper ping = V4PingHelper (interfaces.GetAddress(1));
 
-	apps = ping.Install (c,S);
-	//apps = ping.Install (c);
+	app = ping.Install (c.Get(0), userArg);
+	//app = ping.Install (c.Get(0));
 
-	apps.Start (Seconds (1.0));
-	apps.Stop (Seconds (10.0));
+	//app.Start (Seconds (1.0));       //These are not required as the starttime and stoptime are being set in v4ping-helper.cc***
+	//app.Stop (Seconds (10.0));	   //However, if it is included here, it will just override those values***
 
 	Packet::EnablePrinting ();
 
