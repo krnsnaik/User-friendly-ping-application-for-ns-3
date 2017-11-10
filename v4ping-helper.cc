@@ -18,17 +18,12 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+
 #include "v4ping-helper.h"
+#include "ns3/boolean.h"
+#include "ns3/uinteger.h"
 #include "ns3/v4ping.h"
 #include "ns3/names.h"
-#include "ns3/abort.h"
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/network-module.h"
-#include "ns3/fd-net-device-module.h"
-#include "ns3/internet-apps-module.h"
-#include "ns3/ipv4-static-routing-helper.h"
-#include "ns3/ipv4-list-routing-helper.h"
 #include<iostream>
 #include <sstream>
 using namespace std;
@@ -58,19 +53,19 @@ void
 setflags(string s)
 {
    string params[100];
-  int ctr=0;
-  for (unsigned int i = 0; i<s.length(); i++){
+   int ctr=0;
+   for (unsigned int i = 0; i<s.length(); i++){
     if (s[i] == ' ')
         ctr++;
     else
         params[ctr] += s[i];
-  }
-  for(int i=0;i<ctr;++i){
-  if(params[i]=="-v")
+   }
+   for(int i=0;i<ctr;++i){
+   if(params[i]=="-v")
       {
           verboseflag=1;
       }
-  else if(params[i]=="-i")
+   else if(params[i]=="-i")
       {
           istringstream ss(params[i+1]);
           if(ss >> intervalvalue) {
@@ -80,7 +75,7 @@ setflags(string s)
               cout<<"interval invalid and ignored";
           }
       }
-  else if(params[i]=="-c")
+   else if(params[i]=="-c")
       {
           istringstream ss(params[i+1]);
           if(ss >>count) {
@@ -90,7 +85,7 @@ setflags(string s)
               cout<<"count invalid and ignored";
           }
       }
-  else if(params[i]=="-t")
+   else if(params[i]=="-t")
       {
           istringstream ss(params[i+1]);
           if(ss >>ttlvalue) {
@@ -100,7 +95,7 @@ setflags(string s)
               cout<<"ttl invalid and ignored";
           }
       }
-  else
+   else
     {
           cout<<"invalid arguments passed";
     }
