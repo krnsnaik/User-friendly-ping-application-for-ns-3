@@ -24,9 +24,7 @@
 #include "ns3/node-container.h"
 #include "ns3/application-container.h"
 #include "ns3/object-factory.h"
-#include <string>
 
-using namespace std;
 namespace ns3 {
 
 /**
@@ -56,7 +54,7 @@ public:
    * \returns A list of Ping applications, one for each input node
    */
   ApplicationContainer Install (NodeContainer nodes) const;
-  ApplicationContainer Install (NodeContainer nodes, string s) const;
+  ApplicationContainer Install (NodeContainer nodes,std::string c) const;
 
   /**
    * Install a Ping application on the provided Node.  The Node is specified
@@ -67,7 +65,7 @@ public:
    * \returns An ApplicationContainer holding the Ping application created.
    */
   ApplicationContainer Install (Ptr<Node> node) const;
-
+  ApplicationContainer Install (Ptr<Node> node,std::string s) const;
   /**
    * Install a Ping application on the provided Node.  The Node is specified
    * by a string that must have previously been associated with a Node using the
@@ -78,7 +76,8 @@ public:
    * \returns An ApplicationContainer holding the Ping application created.
    */
   ApplicationContainer Install (std::string nodeName) const;
-
+  ApplicationContainer Install (std::string nodeName,std::string s) const;
+  
   /**
    * \brief Configure ping applications attribute 
    * \param name   attribute's name
