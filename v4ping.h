@@ -112,6 +112,9 @@ private:
   /// produce ping-style output if true
   uint32_t m_count;
   // To store the count of no. of times to ping =========m_count must be set to infinite value=========
+
+   uint32_t m_ttl;
+  //Set the IP Time to Live.
   bool m_verbose;
   /// received packets counter
   uint32_t m_recv;
