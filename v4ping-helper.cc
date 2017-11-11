@@ -41,27 +41,21 @@ namespace ns3 {
     {
         m_factory.Set (name, value);
     }
-
-    ApplicationContainer V4PingHelper::Install (Ptr<Node> node) const
+ 
+    map<char,int> setflags(string s)
     {
-        return ApplicationContainer (InstallPriv (node));
-    }
-
-    ApplicationContainer V4PingHelper::Install (Ptr<Node> node, string s) const
-    {
-
-        // The below code will extract the options from the string and gets stored in map 
+        map <char, int> iping;
         string t, value;
-	    map <char, int> iping;
-        
+        // The below code will extract the options from the string and gets stored in map 
         iping.insert(pair <char, int> ('c', 0));
         iping.insert(pair <char, int> ('i', 1));
         iping.insert(pair <char, int> ('q', 0));
         iping.insert(pair <char, int> ('t', 0));
+        iping.insert(pair <char, int> ('s', 56));
         iping.insert(pair <char, int> ('v', 0));
         iping.insert(pair <char, int> ('w', 15));
 
-	    map <char, int> :: iterator itr;
+	    
 	    for(int i=0;s[i];i++)
 	    {
 		    if(s[i]=='-' || s[i]==' ') continue;
@@ -70,7 +64,7 @@ namespace ns3 {
 	
         for(int i=0;t[i];i++)
         {
-            if(t[i]=='c' || t[i]=='t' || t[i]=='i' || t[i]=='w')
+            if(t[i]=='c' || t[i]=='t' || t[i]=='i' || t[i]=='w' || t[i]=='s')
 		    {
 			    int j=i,k;
 			    value="";
@@ -84,8 +78,10 @@ namespace ns3 {
                     NS_ABORT_MSG ("ping: bad value");
                 else
                 {
-			        str >> k;
-			        iping[t[j]] = k;
+			            str >> k;           
+                  if(k<0)
+                     NS_ABORT_MSG ("ping: bad value");
+                  iping[t[j]] = k;
                 }
 		    }
 		    else if(t[i]=='v' || t[i]=='q')
@@ -93,9 +89,19 @@ namespace ns3 {
 		    else
 			    NS_ABORT_MSG ("These are the only options available currently: [-qv] [-c count] [-i interval] [-t ttl] [-w deadline]");
 	    }
+        return iping;
+    }
 
+    ApplicationContainer V4PingHelper::Install (Ptr<Node> node) const
+    {
+        return ApplicationContainer (InstallPriv (node));
+    }
 
-        return ApplicationContainer (InstallPriv (node, iping['c'], iping['i'], iping['q'], iping['t'], iping['v'], iping['w']) );
+    //Below function will be called if arguments are passed.
+    ApplicationContainer V4PingHelper::Install (Ptr<Node> node, string s) const
+    {
+        map <char, int> iping = setflags(s);
+        return ApplicationContainer (InstallPriv (node, iping['c'], iping['i'], iping['q'], iping['t'], iping['v'], iping['w'], iping['s']) );
     }
 
     ApplicationContainer V4PingHelper::Install (string nodeName) const
@@ -104,6 +110,15 @@ namespace ns3 {
         return ApplicationContainer (InstallPriv (node));
     }
 
+    //Below function will be called if arguments are passed.
+    ApplicationContainer V4PingHelper::Install (string nodeName,string s) const
+    {
+        Ptr<Node> node = Names::Find<Node> (nodeName);
+        map <char, int> iping = setflags(s);
+        return ApplicationContainer (InstallPriv (node, iping['c'], iping['i'], iping['q'], iping['t'], iping['v'], iping['w'], iping['s']) );
+    }
+
+    
     ApplicationContainer V4PingHelper::Install (NodeContainer c) const
     {
         ApplicationContainer apps;
@@ -114,8 +129,8 @@ namespace ns3 {
 
         return apps;
     }
-
-    Ptr<Application> V4PingHelper::InstallPriv (Ptr<Node> node, int c, int i, int q, int t, int v, int w) const
+    
+    Ptr<Application> V4PingHelper::InstallPriv (Ptr<Node> node, int c, int i, int q, int t, int v, int w, int s) const
     {
         Ptr<V4Ping> app = m_factory.Create<V4Ping> ();
         app->SetAttribute ("Count", UintegerValue (c));
@@ -123,6 +138,7 @@ namespace ns3 {
         app->SetAttribute ("Verbose", BooleanValue (v) );     
         app->SetAttribute ("Quiet", BooleanValue (q) );     
         app->SetAttribute ("Interval", TimeValue (Seconds (i)) );
+        app->SetAttribute ("Size", UintegerValue (s));
         Time deadline = Seconds (w);
         app->SetStartTime (Seconds (1.0));
         app->SetStopTime (deadline);

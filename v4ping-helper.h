@@ -59,7 +59,7 @@ namespace ns3 {
              */
 
             ApplicationContainer Install (NodeContainer nodes) const;
-
+            
             /*
              * Install a Ping application on the provided Node.  The Node is specified
              * directly by a Ptr<Node>
@@ -83,12 +83,13 @@ namespace ns3 {
              */
 
             ApplicationContainer Install (std::string nodeName) const;
-
+            ApplicationContainer Install (std::string nodeName,std::string s) const;
             /*
              * brief Configure ping applications attribute 
              * param name   attribute's name
              * param value  attribute's value
              */
+        
             void SetAttribute (std::string name, const AttributeValue &value);
 
         private:
@@ -99,7 +100,7 @@ namespace ns3 {
              */
         
             Ptr<Application> InstallPriv (Ptr<Node> node) const;
-            Ptr<Application> InstallPriv (Ptr<Node> node, int c, int i, int q, int t, int v, int w) const;
+            Ptr<Application> InstallPriv (Ptr<Node> node, int c, int i, int q, int t, int v, int w, int s) const;
             // Object factory
             ObjectFactory m_factory;
     };

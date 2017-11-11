@@ -269,8 +269,10 @@ namespace ns3 {
     void V4Ping::StartApplication (void)
     {
         NS_LOG_FUNCTION (this);
-
         m_started = Simulator::Now ();
+
+        if(m_quiet)
+            m_verbose = false;
         if (m_verbose || m_quiet)
         {
             std::cout << "PING  " << m_remote << " 56(84) bytes of data.\n";
