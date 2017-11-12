@@ -42,18 +42,19 @@ namespace ns3 {
         m_factory.Set (name, value);
     }
  
-    map<char,int> setflags(string s)
+    map<char,uint32_t> setflags(string s)
     {
-        map <char, int> iping;
+        map <char, uint32_t> iping;
         string t, value;
+
         // The below code will extract the options from the string and gets stored in map 
-        iping.insert(pair <char, int> ('c', 0));
-        iping.insert(pair <char, int> ('i', 1));
-        iping.insert(pair <char, int> ('q', 0));
-        iping.insert(pair <char, int> ('t', 0));
-        iping.insert(pair <char, int> ('s', 56));
-        iping.insert(pair <char, int> ('v', 0));
-        iping.insert(pair <char, int> ('w', 15));
+        iping.insert(pair <char, uint32_t> ('c', 0));
+        iping.insert(pair <char, uint32_t> ('i', 1));
+        iping.insert(pair <char, uint32_t> ('q', 0));
+        iping.insert(pair <char, uint32_t> ('t', 0));
+        iping.insert(pair <char, uint32_t> ('s', 56));
+        iping.insert(pair <char, uint32_t> ('v', 0));
+        iping.insert(pair <char, uint32_t> ('w', 15));
 
 	    
 	    for(int i=0;s[i];i++)
@@ -66,7 +67,8 @@ namespace ns3 {
         {
             if(t[i]=='c' || t[i]=='t' || t[i]=='i' || t[i]=='w' || t[i]=='s')
 		    {
-			    int j=i,k;
+			    int j=i;
+                uint32_t k;
 			    value="";
 			    while(t[i+1]>='0' && t[i+1]<='9' && t[i+1])
 			    {
@@ -78,16 +80,16 @@ namespace ns3 {
                     NS_ABORT_MSG ("ping: bad value");
                 else
                 {
-			            str >> k;           
-                  if(k<0)
-                     NS_ABORT_MSG ("ping: bad value");
-                  iping[t[j]] = k;
+                    str >> k;           
+                    if(k<0)
+                        NS_ABORT_MSG ("ping: bad value");
+                    iping[t[j]] = k;
                 }
 		    }
 		    else if(t[i]=='v' || t[i]=='q')
 			    iping[t[i]] = 1;
 		    else
-			    NS_ABORT_MSG ("These are the only options available currently: [-qv] [-c count] [-i interval] [-t ttl] [-w deadline]");
+			    NS_ABORT_MSG ("These are the only options available currently: [-qv] [-c count] [-i interval] [-s size] [-t ttl] [-w deadline]");
 	    }
         return iping;
     }
@@ -100,8 +102,8 @@ namespace ns3 {
     //Below function will be called if arguments are passed.
     ApplicationContainer V4PingHelper::Install (Ptr<Node> node, string s) const
     {
-        map <char, int> iping = setflags(s);
-        return ApplicationContainer (InstallPriv (node, iping['c'], iping['i'], iping['q'], iping['t'], iping['v'], iping['w'], iping['s']) );
+        map <char, uint32_t> iping = setflags(s);
+        return ApplicationContainer (InstallPriv (node, iping) );
     }
 
     ApplicationContainer V4PingHelper::Install (string nodeName) const
@@ -114,8 +116,8 @@ namespace ns3 {
     ApplicationContainer V4PingHelper::Install (string nodeName,string s) const
     {
         Ptr<Node> node = Names::Find<Node> (nodeName);
-        map <char, int> iping = setflags(s);
-        return ApplicationContainer (InstallPriv (node, iping['c'], iping['i'], iping['q'], iping['t'], iping['v'], iping['w'], iping['s']) );
+        map <char, uint32_t> iping = setflags(s);
+        return ApplicationContainer (InstallPriv (node, iping) );
     }
 
     
@@ -130,16 +132,16 @@ namespace ns3 {
         return apps;
     }
     
-    Ptr<Application> V4PingHelper::InstallPriv (Ptr<Node> node, int c, int i, int q, int t, int v, int w, int s) const
+    Ptr<Application> V4PingHelper::InstallPriv (Ptr<Node> node, map<char,uint32_t> iping) const
     {
         Ptr<V4Ping> app = m_factory.Create<V4Ping> ();
-        app->SetAttribute ("Count", UintegerValue (c));
-        app->SetAttribute ("Ttl", UintegerValue (t));
-        app->SetAttribute ("Verbose", BooleanValue (v) );     
-        app->SetAttribute ("Quiet", BooleanValue (q) );     
-        app->SetAttribute ("Interval", TimeValue (Seconds (i)) );
-        app->SetAttribute ("Size", UintegerValue (s));
-        Time deadline = Seconds (w);
+        app->SetAttribute ("Count", UintegerValue (iping['c']));
+        app->SetAttribute ("Ttl", UintegerValue (iping['t']));
+        app->SetAttribute ("Verbose", BooleanValue (iping['v']) );     
+        app->SetAttribute ("Quiet", BooleanValue (iping['q']) );     
+        app->SetAttribute ("Interval", TimeValue (Seconds (iping['i'])) );
+        app->SetAttribute ("Size", UintegerValue (iping['s']));
+        Time deadline = Seconds (iping['w']);
         app->SetStartTime (Seconds (1.0));
         app->SetStopTime (deadline);
                 

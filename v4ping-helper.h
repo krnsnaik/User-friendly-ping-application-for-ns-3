@@ -25,6 +25,7 @@
 #include "ns3/application-container.h"
 #include "ns3/object-factory.h"
 #include <string>
+#include <map>
 
 using namespace std;
 namespace ns3 {
@@ -100,7 +101,7 @@ namespace ns3 {
              */
         
             Ptr<Application> InstallPriv (Ptr<Node> node) const;
-            Ptr<Application> InstallPriv (Ptr<Node> node, int c, int i, int q, int t, int v, int w, int s) const;
+            Ptr<Application> InstallPriv (Ptr<Node> node, map<char,uint32_t> iping) const;
             // Object factory
             ObjectFactory m_factory;
     };
