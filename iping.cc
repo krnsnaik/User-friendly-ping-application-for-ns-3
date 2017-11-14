@@ -12,11 +12,11 @@
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 using namespace ns3;
-using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("iPing");
 
-int main (int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
 	NS_LOG_INFO ("iPing - User friendly ping");
 
@@ -24,19 +24,19 @@ int main (int argc, char *argv[])
 	uint32_t ttl = 0;
 	uint32_t interval = 1;
 	uint32_t deadline = 15;
-	uint32_t packetsize ;
+	uint32_t packetsize = 56;
 	bool verbose = false;
 	bool quiet = false;
 
 	CommandLine cmd;
-  	cmd.AddValue("c", "Pass arguments in this format:[-qv] [-c count] [-i interval] [-t ttl] [-w deadline]", count);
-  	cmd.AddValue("i", "Pass arguments in this format:[-qv] [-c count] [-i interval] [-t ttl] [-w deadline]", interval);
-  	cmd.AddValue("t", "Pass arguments in this format:[-qv] [-c count] [-i interval] [-t ttl] [-w deadline]", ttl);
-  	cmd.AddValue("w", "Pass arguments in this format:[-qv] [-c count] [-i interval] [-t ttl] [-w deadline]", deadline);
-  	cmd.AddValue("s", "Pass arguments in this format:[-qv] [-c count] [-i interval] [-t ttl] [-w deadline]", packetsize);
-  	cmd.AddValue("v", "Pass arguments in this format:[-qv] [-c count] [-i interval] [-t ttl] [-w deadline]", verbose);
-  	cmd.AddValue("q", "Pass arguments in this format:[-qv] [-c count] [-i interval] [-t ttl] [-w deadline]", quiet);
-  	cmd.Parse (argc, argv);
+	cmd.AddValue("c", "Stops after sending specified number(count) of ECHO_REQUEST packets.", count);
+	cmd.AddValue("i", "Specify the interval seconds between sending each packet.", interval);
+	cmd.AddValue("t", "Set the IP Time to Live.", ttl);
+	cmd.AddValue("w", "Specify a timeout, in seconds, before ping exits regardless  of  how  many  packets have  been sent or received.", deadline);
+	cmd.AddValue("s", "Specifies the number of data bytes to be sent.", packetsize);
+	cmd.AddValue("v", "Verbose output.", verbose);
+	cmd.AddValue("q", "Quiet output.  Nothing is displayed except the summary lines at  startup  time  and when finished.", quiet);
+	cmd.Parse (argc, argv);
 
 	NodeContainer c;
 	c.Create (2);
@@ -54,19 +54,16 @@ int main (int argc, char *argv[])
 	stack.Install (c);
 	Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
-
 	NS_LOG_INFO ("Create V4Ping Appliation");
 	Ptr<V4Ping> app = CreateObject<V4Ping> ();
 
-  	Config::SetDefault ("ns3::V4Ping::Size",   UintegerValue (70));
 	app->SetAttribute ("Remote", Ipv4AddressValue (interfaces.GetAddress(1)));
 	app->SetAttribute ("Verbose", BooleanValue (verbose) );
 	app->SetAttribute ("Count", UintegerValue (count));
 	app->SetAttribute ("Ttl", UintegerValue (ttl));     
 	app->SetAttribute ("Quiet", BooleanValue (quiet) );     
 	app->SetAttribute ("Interval", TimeValue (Seconds (interval)) );
-	//app->SetAttribute ("Size", UintegerValue (packetsize));
-
+	app->SetAttribute ("Size", UintegerValue (packetsize));
 
 	c.Get(0)->AddApplication (app);
 	app->SetStartTime (Seconds (1.0));
