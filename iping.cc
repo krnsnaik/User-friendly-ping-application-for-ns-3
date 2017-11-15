@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <cassert>
+#include <cmath>
+#include <climits>
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 #include "ns3/core-module.h"
@@ -20,11 +22,11 @@ main (int argc, char *argv[])
 {
 	NS_LOG_INFO ("iPing - User friendly ping");
 
-	uint32_t count = 0;
-	uint32_t ttl = 0;
-	uint32_t interval = 1;
-	uint32_t deadline = 15;
-	uint32_t packetsize = 56;
+	double count = UINT_MAX;
+	double ttl = 0;
+	double interval = 1;
+	double deadline = 15;
+	double packetsize = 56;
 	bool verbose = false;
 	bool quiet = false;
 
@@ -37,6 +39,13 @@ main (int argc, char *argv[])
 	cmd.AddValue("v", "Verbose output.", verbose);
 	cmd.AddValue("q", "Quiet output.  Nothing is displayed except the summary lines at  startup  time  and when finished.", quiet);
 	cmd.Parse (argc, argv);
+
+	
+  NS_ABORT_MSG_IF (count <= 0, "ping: bad number of packets to transmit.");
+	NS_ABORT_MSG_IF (interval < 0, "ping: bad timing interval.");
+	NS_ABORT_MSG_IF (ttl < 0, "ping: bad value.");
+	NS_ABORT_MSG_IF (packetsize < 0, "ping: illegal negetive packet size.");
+	NS_ABORT_MSG_IF (interval < 0.2 && interval >=0, "ping: cannot flood; minimal interval allowed for user is 200ms.");
 
 	NodeContainer c;
 	c.Create (2);
@@ -59,8 +68,8 @@ main (int argc, char *argv[])
 
 	app->SetAttribute ("Remote", Ipv4AddressValue (interfaces.GetAddress(1)));
 	app->SetAttribute ("Verbose", BooleanValue (verbose) );
-	app->SetAttribute ("Count", UintegerValue (count));
-	app->SetAttribute ("Ttl", UintegerValue (ttl));     
+	app->SetAttribute ("Count", UintegerValue (floor(count)));
+	app->SetAttribute ("Ttl", UintegerValue (floor(ttl)));     
 	app->SetAttribute ("Quiet", BooleanValue (quiet) );     
 	app->SetAttribute ("Interval", TimeValue (Seconds (interval)) );
 	app->SetAttribute ("Size", UintegerValue (packetsize));
