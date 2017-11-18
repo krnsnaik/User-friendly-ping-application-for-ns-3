@@ -28,7 +28,7 @@ V4Ping
 This app mimics a "ping" (ICMP Echo) using IPv4. The application allows the 
 following attributes to be set:
 
-* Remote address
+* Remote address   
 * Verbose mode
 * Packet size (default 56 bytes)
 * Packet interval  (default 1 second)
@@ -66,15 +66,13 @@ directories. The users are encouraged to check the scripts therein to have a
 clear overview of the various options and usage tricks.
 
 Iping 
-=====
-This is an user friendly applications with the following functionalities :
-*  -c count. Stop after sending count ECHO_REQUEST packets. With deadline option, ping waits for count ECHO_REPLY packets, until the timeout expires.
-*  -i interval. Wait interval seconds between sending each packet.  The default is to wait for one second between each packet normally, or not to wait in flood mode. Only super-user may  set  interval 			to values less than 0.2 seconds.
-*  -q Quiet output. Nothing is displayed except the summary lines at startup time and when finished.
-*  -s packetsize. Specifies the number of data bytes to be sent.  The default is 56, which translates into 64 ICMP data bytes when combined with the 8 bytes of ICMP header data.
-*  -t ttl ping only.  Set the IP Time to Live.
-*  -v  Verbose output.
-*  -w deadline. Specify a timeout, in seconds, before ping exits regardless of how many packets have been sent or received. In this case ping does not stop after count packet are sent, it waits either
-  		for deadline expire or until count probes are answered or for some error notification from network.
-
- 
+=====     
+This is an user friendly applications with the following functionalities :     
+      
+      * -c count. Stop after sending count ECHO_REQUEST packets. With deadline option, ping waits for count ECHO_REPLY packets, until the timeout expires.        
+      * -i interval. Wait interval seconds between sending each packet.  The default is to wait for one second between each packet normally, or not to wait in flood mode. Only super-user may  set  interval to values less than 0.2 seconds.      
+      * -q Quiet output. Nothing is displayed except the summary lines at startup time and when finished.       
+      * -s packetsize. Specifies the number of data bytes to be sent.  The default is 56, which translates into 64 ICMP data bytes when combined with the 8 bytes of ICMP header data.     
+      * -t ttl ping only.  Set the IP Time to Live.     
+      * -v Verbose output.       
+      * -w deadline. Specify a timeout, in seconds, before ping exits regardless of how many packets have been sent or received. In this case ping does not stop after count packet are sent, it waits either for deadline expire or until count probes are answered or for some error notification from network.       
